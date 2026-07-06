@@ -51,7 +51,7 @@ export const Modal = ({ isOpen, onClose, title, children, size = 'md' }: ModalPr
         ref={modalRef}
         className={`bg-white rounded-xl shadow-xl w-full ${sizes[size]} relative z-10 animate-in fade-in zoom-in-95 duration-200`}
       >
-        {(title || onClose) && (
+        {title && (
           <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
             {title && <h2 className="text-xl font-semibold text-gray-900">{title}</h2>}
             <button
