@@ -1,0 +1,227 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  phone         String?
+  password      String?
+  emailVerified DateTime?
+  image         String?
+  role          String    @default("STUDENT") // Roles: ADMIN, TRAINER, STUDENT
+  isActive      Boolean   @default(true)
+  
+  // Relations
+  batches       BatchStudent[]
+  classes       ClassSession[] @relation("ClassTrainer")
+  accounts      Account[]
+  sessions      Session[]
+  enrollments   Enrollment[]
+  attendance    Attendance[]
+  announcements Announcement[] @relation("AnnouncementAuthor")
+  assignments   AssignmentSubmission[]
+  extensionRequests ExtensionRequest[] @relation("TrainerExtensionRequests")
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Course {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String?
+  duration    String?        // e.g., "4 Months"
+  thumbnail   String?
+  category    String?
+  features    String?        // JSON string of feature array
+  isPublished Boolean  @default(false)
+  
+  batches     Batch[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Batch {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  status      String   @default("UPCOMING")
+  startDate   DateTime?
+  endDate     DateTime?
+  time        String?  // e.g. "6:00 PM - 8:00 PM"
+  
+  courseId    String?
+  course      Course?  @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  
+  students    BatchStudent[]
+  classes     ClassSession[]
+  enrollments Enrollment[]
+  announcements Announcement[]
+  assignments Assignment[]
+  extensionRequests ExtensionRequest[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Join table for User (Student) to Batch many-to-many relation
+model BatchStudent {
+  batchId   String
+  userId    String
+  
+  batch     Batch @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  user      User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([batchId, userId])
+}
+
+model Enrollment {
+  id         String   @id @default(cuid())
+  userId     String
+  batchId    String
+  status     String   @default("ACTIVE")  // ACTIVE, COMPLETED, DROPPED
+  enrolledAt DateTime @default(now())
+  
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  batch      Batch    @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, batchId])
+}
+
+model ClassSession {
+  id           String   @id @default(cuid())
+  title        String
+  startTime    DateTime
+  endTime      DateTime
+  meetLink     String?
+  recordingUrl String?
+  status       String   @default("SCHEDULED")
+
+  batchId      String
+  batch        Batch    @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  
+  trainerId    String
+  trainer      User     @relation("ClassTrainer", fields: [trainerId], references: [id])
+  
+  attendance   Attendance[]
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Attendance {
+  id             String       @id @default(cuid())
+  classSessionId String
+  userId         String
+  status         String       @default("ABSENT")  // PRESENT, ABSENT, LATE
+  markedAt       DateTime     @default(now())
+  
+  classSession   ClassSession @relation(fields: [classSessionId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([classSessionId, userId])
+}
+
+model Announcement {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  batchId   String?
+  authorId  String
+  createdAt DateTime @default(now())
+  
+  batch     Batch?   @relation(fields: [batchId], references: [id], onDelete: SetNull)
+  author    User     @relation("AnnouncementAuthor", fields: [authorId], references: [id])
+}
+
+model Assignment {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  dueDate     DateTime
+  fileUrl     String?  // Optional uploaded file URL
+  batchId     String
+  authorId    String   // The trainer who created it
+  batch       Batch    @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  submissions AssignmentSubmission[]
+  createdAt   DateTime @default(now())
+}
+
+model AssignmentSubmission {
+  id           String     @id @default(cuid())
+  assignmentId String
+  userId       String     // The student
+  content      String     // Link to their work or text
+  aiFeedback   String?    // Feedback generated by the AI
+  grade        Int?       // Grade out of 100
+  status       String     @default("PENDING") // PENDING, GRADED
+  submittedAt  DateTime   @default(now())
+  
+  assignment   Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([assignmentId, userId])
+}
+
+// NextAuth standard tables
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?
+  access_token       String?
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model ExtensionRequest {
+  id        String   @id @default(cuid())
+  batchId   String
+  trainerId String
+  type      String   // WEEKS or DATE
+  value     String   // e.g., "4" or "2026-12-31"
+  reason    String?
+  status    String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  batch     Batch    @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  trainer   User     @relation("TrainerExtensionRequests", fields: [trainerId], references: [id], onDelete: Cascade)
+}
