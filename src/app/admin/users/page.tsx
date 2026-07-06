@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 
 type User = {
@@ -14,7 +14,7 @@ const ROLE_COLORS: Record<string, string> = {
 
 type ModalMode = 'create' | 'edit' | 'delete' | null;
 
-export default function AdminUsersPage() {
+function AdminUsersContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -309,5 +309,13 @@ export default function AdminUsersPage() {
         </div>
       )}
     </>
+  );
+}
+
+export default function AdminUsersPage() {
+  return (
+    <Suspense fallback={<div>Loading users...</div>}>
+      <AdminUsersContent />
+    </Suspense>
   );
 }
