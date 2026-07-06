@@ -5,14 +5,14 @@ import { authOptions } from '@/lib/auth';
 
 export async function POST(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions);
   if (!session || session.user.role !== 'STUDENT') {
     return new NextResponse('Unauthorized', { status: 401 });
   }
 
-  const { id } = params;
+  const { id } = await params;
   
   try {
     const { content } = await req.json();
