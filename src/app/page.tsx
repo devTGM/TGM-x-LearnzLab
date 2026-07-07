@@ -574,7 +574,7 @@ export default function Home() {
             </div>
             <div style={{ borderTop: '1px solid #1f2937', paddingTop: 28, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
               <p style={{ color: '#4b5563', fontSize: 13 }}>© 2026 LearnzLab. All rights reserved.</p>
-              <p style={{ color: '#4b5563', fontSize: 13 }}>Chennai, Tamil Nadu, India</p>
+
             </div>
           </div>
         </footer>
