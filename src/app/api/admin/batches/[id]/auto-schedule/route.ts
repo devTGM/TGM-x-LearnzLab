@@ -27,18 +27,21 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   const durationMs = parseFloat(durationHours) * 60 * 60 * 1000;
 
   let current = new Date(batch.startDate);
-  current.setHours(0, 0, 0, 0); // reset time to midnight to easily iterate days
+  current.setUTCHours(0, 0, 0, 0); // strictly use UTC to prevent Vercel timezone mismatch
 
   const end = new Date(batch.endDate);
-  end.setHours(23, 59, 59, 999);
+  end.setUTCHours(23, 59, 59, 999);
 
   let classCount = 1;
   const sessionsToCreate = [];
 
   while (current <= end) {
-    if (daysOfWeek.includes(current.getDay())) {
+    if (daysOfWeek.includes(current.getUTCDay())) {
       const sessionStart = new Date(current);
-      sessionStart.setHours(hours, minutes, 0, 0);
+      
+      // Treat the input 'startTime' as IST (UTC +5:30)
+      // To store the correct absolute time in the DB, subtract 5 hours and 30 minutes
+      sessionStart.setUTCHours(hours - 5, minutes - 30, 0, 0);
       
       const sessionEnd = new Date(sessionStart.getTime() + durationMs);
 
@@ -53,8 +56,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
 
       classCount++;
     }
-    // Increment day by 1
-    current.setDate(current.getDate() + 1);
+    // Increment day by 1 in UTC
+    current.setUTCDate(current.getUTCDate() + 1);
   }
 
   if (sessionsToCreate.length === 0) {
