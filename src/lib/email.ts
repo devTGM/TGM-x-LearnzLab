@@ -15,7 +15,7 @@ export async function sendWelcomeEmail(to: string, name: string, tempPassword: s
       
       <h3 style="color: #6440FB; margin-top: 25px;">Your Account Details</h3>
       <ul style="list-style-type: none; padding-left: 0; background-color: #f8f9fc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0;">
-        <li style="margin-bottom: 8px;"><strong>Portal:</strong> <a href="${loginUrl}/login" style="color: #6440FB;">${loginUrl}/login</a></li>
+        <li style="margin-bottom: 8px;"><strong>Portal:</strong> <a href="https://study.learnzlab.com" style="color: #6440FB;">https://study.learnzlab.com</a></li>
         <li style="margin-bottom: 8px;"><strong>Username/Email:</strong> ${to}</li>
         <li><strong>Temporary Password:</strong> <span style="font-family: monospace; background: #e2e8f0; padding: 2px 6px; border-radius: 4px;">${tempPassword}</span></li>
       </ul>
@@ -52,7 +52,7 @@ export async function sendWelcomeEmail(to: string, name: string, tempPassword: s
       
       <h3 style="color: #6440FB; margin-top: 25px;">Your Account Details</h3>
       <ul style="list-style-type: none; padding-left: 0; background-color: #f8f9fc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0;">
-        <li style="margin-bottom: 8px;"><strong>Trainer Portal:</strong> <a href="${loginUrl}/login" style="color: #6440FB;">${loginUrl}/login</a></li>
+        <li style="margin-bottom: 8px;"><strong>Trainer Portal:</strong> <a href="https://study.learnzlab.com" style="color: #6440FB;">https://study.learnzlab.com</a></li>
         <li style="margin-bottom: 8px;"><strong>Username/Email:</strong> ${to}</li>
         <li><strong>Temporary Password:</strong> <span style="font-family: monospace; background: #e2e8f0; padding: 2px 6px; border-radius: 4px;">${tempPassword}</span></li>
       </ul>
