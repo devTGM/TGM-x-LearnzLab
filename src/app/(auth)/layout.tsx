@@ -68,12 +68,30 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           display: flex; align-items: center; justify-content: center;
           flex-shrink: 0; margin-top: 2px;
         }
+        .auth-right-panel {
+          flex: 1; position: relative; overflow: hidden;
+          background: linear-gradient(145deg, #0a0118 0%, #140342 40%, #2d1b8e 70%, #6440FB 100%);
+          display: flex; align-items: center; justify-content: center;
+          padding: 64px 56px;
+        }
+        @media (max-width: 767px) {
+          .auth-right-panel { display: none !important; }
+          .auth-form-panel {
+            max-width: 100% !important;
+            padding: 32px 24px !important;
+            min-height: 100vh;
+          }
+        }
+        @media (min-width: 768px) and (max-width: 1023px) {
+          .auth-right-panel { padding: 40px 32px; }
+          .auth-form-panel { padding: 40px 40px !important; max-width: 400px !important; }
+        }
       `}</style>
 
       <div style={{ display: 'flex', minHeight: '100vh', fontFamily: "'Inter', system-ui, sans-serif" }}>
         
         {/* ── LEFT: Form Panel ── */}
-        <div style={{
+        <div className="auth-form-panel" style={{
           width: '100%', maxWidth: 520,
           background: '#fff', display: 'flex', flexDirection: 'column',
           justifyContent: 'center', padding: '48px 56px',
@@ -93,12 +111,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         </div>
 
         {/* ── RIGHT: Brand Panel ── */}
-        <div style={{
-          flex: 1, position: 'relative', overflow: 'hidden',
-          background: 'linear-gradient(145deg, #0a0118 0%, #140342 40%, #2d1b8e 70%, #6440FB 100%)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          padding: '64px 56px',
-        }}>
+        <div className="auth-right-panel">
           {/* Grid pattern overlay */}
           <div style={{
             position: 'absolute', inset: 0, opacity: 0.07,

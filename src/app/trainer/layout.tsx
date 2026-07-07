@@ -23,6 +23,15 @@ export default function TrainerLayout({ children }: { children: React.ReactNode 
           padding: 32px;
           overflow-y: auto;
         }
+        @media (max-width: 767px) {
+          .admin-content {
+            padding: 16px;
+            padding-bottom: 84px;
+          }
+        }
+        @media (min-width: 768px) and (max-width: 1023px) {
+          .admin-content { padding: 24px; }
+        }
         .admin-page-header {
           margin-bottom: 28px;
         }
